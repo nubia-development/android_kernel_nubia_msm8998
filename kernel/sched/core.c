@@ -2087,6 +2087,28 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 
 	wake_flags &= ~WF_NO_NOTIFIER;
 
+	if (p == current) {
+		/*
+		 * We're waking current, this means 'p->on_rq' and 'task_cpu(p)
+		 * == smp_processor_id()'. Together this means we can special
+		 * case the whole 'p->on_rq && ttwu_remote()' case below
+		 * without taking any locks.
+		 *
+		 * In particular:
+		 *  - we rely on Program-Order guarantees for all the ordering,
+		 *  - we're serialized against set_special_state() by virtue of
+		 *    it disabling IRQs (this allows not taking ->pi_lock).
+		 */
+		src_cpu = cpu = task_cpu(p);
+		if (!(p->state & state))
+			return false;
+		success = 1;
+		trace_sched_waking(p);
+		p->state = TASK_RUNNING;
+		trace_sched_wakeup(p);
+		goto out;
+	}
+
 	/*
 	 * If we are going to wake up a thread waiting for CONDITION we
 	 * need to ensure that CONDITION=1 done by the caller can not be
@@ -2098,7 +2120,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 	src_cpu = cpu = task_cpu(p);
 
 	if (!(p->state & state))
-		goto out;
+		goto unlock;
 
 	trace_sched_waking(p);
 
@@ -2127,7 +2149,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 	 */
 	smp_rmb();
 	if (p->on_rq && ttwu_remote(p, wake_flags))
-		goto stat;
+		goto unlock;
 
 #ifdef CONFIG_SMP
 	/*
@@ -2205,10 +2227,11 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 	note_task_waking(p, wallclock);
 #endif /* CONFIG_SMP */
 	ttwu_queue(p, cpu);
-stat:
-	ttwu_stat(p, cpu, wake_flags);
-out:
+unlock:
 	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
+out:
+	if (success)
+		ttwu_stat(p, cpu, wake_flags);
 
 	if (freq_notif_allowed) {
 		if (!same_freq_domain(src_cpu, cpu)) {
