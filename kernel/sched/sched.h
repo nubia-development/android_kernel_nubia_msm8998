@@ -2888,7 +2888,8 @@ DECLARE_PER_CPU(struct update_util_data *, cpufreq_update_util_data);
  */
 static inline void cpufreq_update_util(struct rq *rq, unsigned int flags)
 {
-        struct update_util_data *data;
+	struct update_util_data *data;
+	u64 clock;
 
 #ifdef CONFIG_SCHED_HMP
 	/*
@@ -2902,12 +2903,15 @@ static inline void cpufreq_update_util(struct rq *rq, unsigned int flags)
 		!(flags & SCHED_CPUFREQ_INTERCLUSTER_MIG))
 		return;
 	rq->load_reported_window = rq->window_start;
+	clock = sched_ktime_clock();
+#else
+	clock = rq_clock(rq);
 #endif
 
 		data = rcu_dereference_sched(*per_cpu_ptr(&cpufreq_update_util_data,
 						cpu_of(rq)));
         if (data)
-                data->func(data, sched_ktime_clock(), flags);
+                data->func(data, clock, flags);
 }
 
 static inline void cpufreq_update_this_cpu(struct rq *rq, unsigned int flags)
