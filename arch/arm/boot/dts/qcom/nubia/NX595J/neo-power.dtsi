@@ -1,0 +1,95 @@
+/*
+ * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&pmi8998_gpios {
+    gpio@c200 {
+        reg = <0xc200 0x100>;
+        qcom,pin-num = <3>;
+        status = "okay";
+    };
+    gpio@c500 {
+        reg = <0xc500 0x100>;
+        qcom,pin-num = <6>;
+        status = "okay";
+        /delete-property/ qcom,mode;
+        /delete-property/ qcom,pull;
+        /delete-property/ qcom,vin-sel;
+        /delete-property/ qcom,src-sel;
+        /delete-property/ qcom,out-strength;
+        /delete-property/ qcom,master-en;
+    };
+};
+
+&mtp_batterydata {
+	qcom,batt-id-range-pct = <15>;
+	#include "fg-gen3-batterydata-scud-3200mah.dtsi"
+};
+
+&pmi8998_charger{
+	/*BEGIN:Added neo power feature */
+	qcom,usb-audio-select-support;
+	qcom,switch-en-gpio = <&tlmm 23 0>;
+	qcom,mbhc-int-gpio = <&tlmm 24 0>;
+	qcom,switch-select-gpio = <&tlmm 78 0>;
+	qcom,bat-temp-limit-support;
+	qcom,bat-temp-limit-current = <1000000>;
+	qcom,bat-temp-jeita-current = <725000>;
+	//qcom,bat-temp-jeita-cool-low-current = <720000>;
+	qcom,bat-temp-limit-threshold = <430>;
+	qcom,bat-temp-limit-voltage = <4100>;
+	/*END*/
+	//qcom,step-soc-thresholds = <60 70 80 90>;
+	//qcom,step-current-deltas = <950000 950000 0 0 0>;
+	qcom,fcc-max-ua = <2150000>;
+	qcom,fv-max-uv = <4400000>;
+	qcom,usb-icl-ua = <2000000>;
+};
+
+&pmi8998_fg {
+	qcom,fg-recharge-soc-thr = <99>;
+	qcom,fg-recharge-voltage = <4340>;
+	qcom,battery-thermal-coefficients = [bd 50 ff];
+	qcom,fg-jeita-thresholds = <0 10 44 50>;
+	qcom,fg-jeita-hyst-temp = <2>;
+	qcom,fg-chg-term-current = <200>;
+	qcom,fg-sys-term-current = <(-250)>;
+	qcom,hold-soc-while-full;
+	nubia,use-default-batt-id = <15>;
+};
+
+&spmi_bus {
+	qcom,pmi8998@2 {
+		neo,battery {
+			compatible = "nubia,neo-battery";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			reg = <0x1000 0x700>;
+			neo,batt-capacity-uah = <3100000>;
+			neo,batt-cutoff-mv = <3450>;
+			neo,batt-soc-increase-per-sec = <10>;
+			neo,batt-soc-decrease-per-sec = <60>;
+		};
+	};
+};
