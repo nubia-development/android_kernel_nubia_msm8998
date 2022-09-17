@@ -436,8 +436,23 @@
 		qcom,mdss-dsi-off-command = [
 				05 01 00 00 14 00 01 28
 				05 01 00 00 78 00 01 10];
-
-				
+		cm,mdss-livedisplay-command-state = "dsi_lp_mode";
+		cm,mdss-livedisplay-cabc-ui-cmd = [
+			39 01 00 00 00 00 02 53 2c
+			39 01 00 00 00 00 02 55 81
+			];
+		cm,mdss-livedisplay-cabc-image-cmd = [
+			39 01 00 00 00 00 02 53 2c
+			39 01 00 00 00 00 02 55 82
+		];
+		cm,mdss-livedisplay-cabc-video-cmd = [
+			39 01 00 00 00 00 02 53 2c
+			39 01 00 00 00 00 02 55 83
+		];
+		cm,mdss-livedisplay-cabc-cmd = [
+			39 01 00 00 00 00 02 53 2c
+			39 01 00 00 00 00 02 55 00
+		];				
 		nubia,mdss-dsi-cabc-command-off = [
 			15 01 00 00 00 00 02 53 2c
 			15 01 00 00 00 00 02 55 00
