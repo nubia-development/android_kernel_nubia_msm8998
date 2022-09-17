@@ -1,0 +1,157 @@
+/*
+ * nubia overwrite dts
+ */
+ &soc {
+	nubia_hw_ver_gpio: nubia_hw_gpio_ctrl {
+	   compatible = "qcom,nubia_hw_gpio_ctrl";
+	   qcom,pcb-gpio1 = <&tlmm 99 0>;
+	   qcom,pcb-gpio2 = <&tlmm 100 0>;
+	   qcom,rf-gpio1 = <&tlmm  127 0>;
+	   qcom,rf-gpio2 = <&tlmm 128 0>;
+	   qcom,config-gpio1 = <&tlmm 59 0>;
+	   qcom,config-gpio2 = <&tlmm 60 0>;
+	   pinctrl-names = "pull_up_default","pull_down_default";
+	   pinctrl-0 = <&nubia_gpio_default>;
+	   pinctrl-1 = <&nubia_gpio_pulldown>;
+   };
+
+
+    keyreset {
+        compatible = "nubia,keyreset";
+        keys-down = <0x73 0x72>;
+        keys-up = <0x73 0x72>;
+        keyreset-need-panic;
+        key_down_delay = <20>;
+	};
+
+};
+&tlmm {
+   nubia_gpio {
+		   nubia_gpio_default: nubia_gpio_default{
+				   mux {
+						   pins = "gpio59", "gpio60", "gpio99", "gpio100", "gpio127", "gpio128";
+						   function = "gpio";
+				   };
+
+				   config {
+						   pins = "gpio59", "gpio60", "gpio99", "gpio100", "gpio127", "gpio128";
+						   drive-strength = <2>; /* 2 mA */
+						   bias-pull-up; /* pull up */
+						   input-enable;
+				   };
+		   };
+		   nubia_gpio_pulldown: nubia_gpio_pulldown{
+				   mux {
+						   pins = "gpio59", "gpio60", "gpio99", "gpio100", "gpio127", "gpio128";
+						   function = "gpio";
+				   };
+
+				   config {
+						   pins = "gpio59", "gpio60", "gpio99", "gpio100", "gpio127", "gpio128";
+						   drive-strength = <2>; /* 2 mA */
+						   bias-pull-down; /* pull down */
+						   input-enable;
+				   };
+		   };
+   };
+
+};
+
+&wdog {
+        qcom,bark-time = <20000>;
+        qcom,pet-time = <15000>;
+};
+&pm8998_rtc{
+	qcom,qpnp-rtc-alarm-pwrup = <1>;
+};
+&tlmm {
+	/delete-node/ wcd_usbc_analog_en1;
+	/delete-node/ wcd_usbc_analog_en2n;
+};
+
+&soc {
+    gpio_keys {
+	    /delete-node/ cam_focus;
+    };
+};
+
+&i2c_6 {
+    /delete-node/ nq@28;
+};
+
+&firmware{
+	android{
+		compatible = "android,firmware";
+		fstab{
+				compatible = "android,fstab";
+				vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/1da4000.ufshc/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1,discard";
+					fsmgr_flags = "wait";
+					status = "ok";
+				};
+                system {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/1da4000.ufshc/by-name/system";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1,discard";
+					fsmgr_flags = "wait";
+					status = "ok";
+				};
+		};
+	};
+};
+
+&rpm_bus {
+
+    rpm-regulator-ldoa28 {
+	    status = "okay";
+	    pm8998_l28: regulator-l28 {
+		    regulator-min-microvolt = <3000000>;
+		    regulator-max-microvolt = <3000000>;
+		    status = "okay";
+	    };
+    };
+};
+
+&tspp {
+		status = "disabled";
+};
+&smb138x_tadc {
+	skin_temp@1 {
+		reg = <1>;
+		qcom,rbias = <27000>;
+		qcom,rtherm-at-25degc = <68000>;
+		qcom,beta-coefficient = <4150>;
+	};
+};
+
+&cdc_reset_sleep {
+	mux {
+		pins = "gpio63";
+		function = "gpio";
+	};
+	config {
+		pins = "gpio63";
+		drive-strength = <16>;
+		bias-disable;
+		output-low;
+	};
+};
+
+&cdc_reset_active {
+	mux {
+		pins = "gpio63";
+		function = "gpio";
+	};
+	config {
+		pins = "gpio63";
+		drive-strength = <16>;
+		bias-pull-down;
+		output-high;
+	};
+};
+
+
