@@ -43,6 +43,10 @@
 				label = "rgb";
 				status = "okay";
 
+		/delete-node/ red_led;
+		/delete-node/ green_led;
+		/delete-node/ blue_led;
+
 				red_led: qcom,rgb_0 {
 						label = "rgb";
 						qcom,id = <3>;
@@ -64,7 +68,12 @@
 						linux,name = "nubia_led";
 						linux,default-trigger = "none";
 						nubia,grade_percentage = <30>;
-						nubia,grade_scale_offset = <0> ;
+						nubia,grade_scale_offset = <0>;
+                        nubia,fade_time = <3>;
+                        nubia,fullon_time = <0>;
+                        nubia,fulloff_time = <4>;
+                        nubia,onceblink_max_grade = <70>;
+                        nubia,autoblink_max_grade = <100>;
 				};
 				green_led: qcom,rgb_1 {
 						label = "rgb";
