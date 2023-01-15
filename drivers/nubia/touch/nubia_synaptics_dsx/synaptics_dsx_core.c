@@ -4501,6 +4501,37 @@ exit:
 }
 EXPORT_SYMBOL(synaptics_rmi4_new_function);
 
+static int synaptics_creat_tpnode(struct synaptics_rmi4_data * rmi4_data)
+{
+	struct class * tpnode_class;
+	struct device * tpnode_dev;
+	int retval = -1;
+
+	 tpnode_class = class_create(THIS_MODULE, "touch");
+	 if(IS_ERR(tpnode_class))
+	 {
+		pr_err("%s : Failed to create tpnode_class \n",__func__);
+		goto err;
+	 }
+
+	 tpnode_dev = device_create(tpnode_class, NULL, 0, NULL, "tpnode");
+	 if(IS_ERR(tpnode_dev))
+	 {
+		pr_err("%s : Failed to create tpnode_dev \n",__func__);
+		goto err;
+	 }
+
+	 retval = sysfs_create_link(&tpnode_dev->kobj, &rmi4_data->input_dev->dev.kobj,"synaptics");
+	 if(retval != 0 )
+	 {
+		pr_err("%s : Failed to create tpnode_link \n",__func__);
+		goto err;
+	 }
+	 return 0;
+err:
+	return retval;
+}
+
 static int synaptics_rmi4_probe(struct platform_device *pdev)
 {
 	int retval;
@@ -4696,6 +4727,13 @@ static int synaptics_rmi4_probe(struct platform_device *pdev)
 					__func__);
 			goto err_sysfs;
 		}
+	}
+
+	retval = synaptics_creat_tpnode(rmi4_data);
+	if(retval < 0)
+	{
+		dev_err(&pdev->dev,"%s: Failed to create tpnode \n",__func__);
+		goto err_sysfs;
 	}
 
 #ifdef NUBIA_TOUCH_SYNAPTICS
