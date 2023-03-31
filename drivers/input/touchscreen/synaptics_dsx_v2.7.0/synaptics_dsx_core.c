@@ -1379,9 +1379,9 @@ static int synaptics_rmi4_f12_abs_report(struct synaptics_rmi4_data *rmi4_data,
 
 		if (gesture_type && gesture_type != F12_UDG_DETECT) {
 #ifdef NUBIA_TOUCH_SYNAPTICS
-			input_report_key(rmi4_data->input_dev, KEY_F10, 1);
+			input_report_key(rmi4_data->input_dev, KEY_WAKEUP, 1);
 			input_sync(rmi4_data->input_dev);
-			input_report_key(rmi4_data->input_dev, KEY_F10, 0);
+			input_report_key(rmi4_data->input_dev, KEY_WAKEUP, 0);
 			input_sync(rmi4_data->input_dev);
 			pr_info("%s synaptics wakeup gesture detected!\n", __func__);
 #else
@@ -3583,7 +3583,7 @@ static void synaptics_rmi4_set_params(struct synaptics_rmi4_data *rmi4_data)
 
 #ifdef NUBIA_TOUCH_SYNAPTICS
 	input_set_capability(rmi4_data->input_dev, EV_KEY, KEY_F9);
-	input_set_capability(rmi4_data->input_dev, EV_KEY, KEY_F10);
+	input_set_capability(rmi4_data->input_dev, EV_KEY, KEY_WAKEUP);
 #endif
 
 	return;
