@@ -730,31 +730,32 @@
 			status = "okay";
 		};
 
-		pmi8998_haptics: qcom,haptics@c000 {
-			compatible = "qcom,qpnp-haptics";
+		pmi8998_haptics: qcom,haptic@c000 {
+			status = "disabled";
+			compatible = "qcom,qpnp-haptic";
 			reg = <0xc000 0x100>;
 			interrupts = <0x3 0xc0 0x0 IRQ_TYPE_EDGE_BOTH>,
 				     <0x3 0xc0 0x1 IRQ_TYPE_EDGE_BOTH>;
-			interrupt-names = "hap-sc-irq", "hap-play-irq";
+			interrupt-names = "sc-irq", "play-irq";
 			qcom,pmic-revid = <&pmi8998_revid>;
 			qcom,pmic-misc = <&pmi8998_misc>;
 			qcom,misc-clk-trim-error-reg = <0xf3>;
-			qcom,int-pwm-freq-khz = <505>;
-			qcom,play-mode = "direct";
-			qcom,wave-play-rate-us = <6667>;
-			qcom,actuator-type = <0>;
-			qcom,wave-shape = "square";
-			qcom,vmax-mv = <3200>;
+			qcom,actuator-type = "lra";
+			qcom,play-mode = "buffer";
+			qcom,wave-samples = [7e 7e 7e 28 28 28 28 28];
+			qcom,vmax-mv = <1800>;
 			qcom,ilim-ma = <800>;
+			qcom,wave-shape = "sine";
+			qcom,wave-play-rate-us = <4255>;
+			qcom,int-pwm-freq-khz = <505>;
 			qcom,sc-deb-cycles = <8>;
 			qcom,en-brake;
-			qcom,brake-pattern = <0x3 0x3 0x0 0x0>;
+			qcom,brake-pattern = [03 03 03 03];
 			qcom,lra-high-z = "opt1";
 			qcom,lra-auto-res-mode = "qwd";
 			qcom,lra-res-cal-period = <4>;
 			qcom,correct-lra-drive-freq;
 		};
-
 
 		flash_led: qcom,leds@d300 {
 			compatible = "qcom,qpnp-flash-led-v2";
