@@ -56,7 +56,9 @@
 	#define drv26xx_debug(format , ...)
 #endif
 
+#ifdef CONFIG_MACH_NUBIA_NX563J
 static int vibe_strength = DEF_VIBE_STRENGTH;
+#endif
 
 static struct drv2605_data *pDRV2605data = NULL;
 
@@ -98,6 +100,7 @@ static int drv2605_reg_read(struct drv2605_data *pDrv2605data, unsigned int reg)
 	return ret;
 }
 
+#ifdef CONFIG_MACH_NUBIA_NX563J
 static ssize_t drv2605_vib_min_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -165,6 +168,7 @@ static struct attribute *timed_dev_attrs[] = {
 static struct attribute_group timed_dev_attr_group = {
 	.attrs = timed_dev_attrs,
 };
+#endif
 
 static int drv2605_reg_write(struct drv2605_data *pDrv2605data, unsigned char reg, char val)
 {
@@ -425,7 +429,11 @@ static void vibrator_enable( struct timed_output_dev *dev, int value)
 		}
 
 		drv2605_change_mode(pDrv2605data, WORK_VIBRATOR, DEV_READY);
+#ifdef CONFIG_MACH_NUBIA_NX563J
 		drv2605_set_rtp_val(pDrv2605data, vibe_strength);
+#else
+		drv2605_set_rtp_val(pDrv2605data,  0x7f);
+#endif
 		pDrv2605data->vibrator_is_playing = YES;
 		switch_set_state(&pDrv2605data->sw_dev, SW_STATE_RTP_PLAYBACK);
 
@@ -787,8 +795,11 @@ static int Haptics_init(struct drv2605_data *pDrv2605data)
 		drv26xx_debug(KERN_ALERT"drv2605: fail to register switch\n");
 		goto fail4;
 	}
-
+#ifdef CONFIG_MACH_NUBIA_NX563J
 	pDrv2605data->to_dev.name = "vibrator"; // for cmhw
+#else
+	pDrv2605data->to_dev.name = "vibrator_drv2605";//for compatible
+#endif
 	pDrv2605data->to_dev.get_time = vibrator_get_time;
 	pDrv2605data->to_dev.enable = vibrator_enable;
 
@@ -798,11 +809,13 @@ static int Haptics_init(struct drv2605_data *pDrv2605data)
 		goto fail3;
 	}
 
+#ifdef CONFIG_MACH_NUBIA_NX563J
 	if (sysfs_create_group(&pDrv2605data->to_dev.dev->kobj,
 					&timed_dev_attr_group)) {
 		drv26xx_debug(KERN_ALERT"drv2605: fail to create strength tunables\n");
 		goto fail3;
 	}
+#endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	//   pDrv2605data->early_suspend.suspend = drv2605_early_suspend;
