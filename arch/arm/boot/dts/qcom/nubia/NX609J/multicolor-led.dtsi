@@ -25,7 +25,7 @@
 		pinctrl-1 = <&aw22xxx_int_suspend &aw22xxx_reset_suspend>;
 		aw22xxx,led {
 			aw22xxx,name = "aw22xxx_led";
-			aw22xxx,imax = <8>;
+			aw22xxx,imax = <0x0f>;
 			aw22xxx,brightness = <128>;
 			aw22xxx,max_brightness = <255>;
 		};
