@@ -130,3 +130,9 @@
 	qcom,fs-curr-ua = <20000>;
 	qcom,en-cabc;
 };
+
+&firmware{
+	android{
+		/delete-node/ fstab;
+	};
+};
