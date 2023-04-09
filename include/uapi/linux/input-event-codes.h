@@ -335,7 +335,10 @@
 #define KEY_RFKILL		247	/* Key that controls all radios */
 
 #define KEY_MICMUTE		248	/* Mute / unmute the microphone */
-
+#ifdef CONFIG_NUBIA_KEYBOARD_GAMESWITCH
+#define KEY_GAMESWITCH_ON	250
+#define KEY_GAMESWITCH_OFF	251
+#endif
 /* Code 255 is reserved for special needs of AT keyboard driver */
 
 #define BTN_MISC		0x100
