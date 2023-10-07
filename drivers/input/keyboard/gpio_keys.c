@@ -385,7 +385,7 @@ static void gpio_keys_gpio_report_event(struct gpio_button_data *bdata)
 	int state;
 
 #ifdef CONFIG_NUBIA_KEYBOARD_GAMESWITCH
-	static gs_old_state;
+	static int gs_old_state;
 #endif
 	state = (__gpio_get_value(button->gpio) ? 1 : 0) ^ button->active_low;
 	if (state < 0) {
