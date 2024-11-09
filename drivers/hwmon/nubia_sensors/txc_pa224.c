@@ -1112,10 +1112,10 @@ static void pa224_irq_enable(struct pa224_data *data, bool enable, bool flag_syn
 	}
 
 	if (enable) {
-		enable_irq(data->irq);
+		enable_irq_wake(data->irq);
 	} else {
 		if (flag_sync) {
-			disable_irq(data->irq);
+			disable_irq_wake(data->irq);
 		} else {
 			disable_irq_nosync(data->irq);
 		}
